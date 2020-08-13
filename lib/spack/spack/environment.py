@@ -38,6 +38,7 @@ from spack.spec_list import SpecList, InvalidSpecConstraintError
 from spack.variant import UnknownVariantError
 import spack.util.lock as lk
 from spack.util.path import substitute_path_variables
+from spack.installer import PackageInstaller
 
 #: environment variable used to indicate the active environment
 spack_env_var = 'SPACK_ENV'
@@ -1246,20 +1247,7 @@ class Environment(object):
         self.concretized_order.append(h)
         self.specs_by_hash[h] = concrete
 
-    def install(self, user_spec, concrete_spec=None, **install_args):
-        """Install a single spec into an environment.
-
-        This will automatically concretize the single spec, but it won't
-        affect other as-yet unconcretized specs.
-        """
-        concrete = self.concretize_and_add(user_spec, concrete_spec)
-
-        self._install(concrete, **install_args)
-
-    def _install(self, spec, **install_args):
-        # "spec" must be concrete
-        spec.package.do_install(**install_args)
-
+    def _install_log_links(self, spec):
         if not spec.external:
             # Make sure log directory exists
             log_path = self.log_path
@@ -1273,34 +1261,38 @@ class Environment(object):
                     os.remove(build_log_link)
                 os.symlink(spec.package.build_log_path, build_log_link)
 
-    def install_all(self, args=None):
+    def install_all(self, args=None, **install_args):
         """Install all concretized specs in an environment.
 
         Note: this does not regenerate the views for the environment;
         that needs to be done separately with a call to write().
 
+        Args:
+            args (Namespace): argparse namespace with command arguments
+            install_args (dict): keyword install arguments
         """
 
-        # If "spack install" is invoked repeatedly for a large environment
-        # where all specs are already installed, the operation can take
-        # a large amount of time due to repeatedly acquiring and releasing
-        # locks, this does an initial check across all specs within a single
-        # DB read transaction to reduce time spent in this case.
-        uninstalled_specs = []
-        with spack.store.db.read_transaction():
-            for concretized_hash in self.concretized_order:
-                spec = self.specs_by_hash[concretized_hash]
-                if not spec.package.installed:
-                    uninstalled_specs.append(spec)
-
-        for spec in uninstalled_specs:
+        installs = []
+        ordered_specs = [self.specs_by_hash[c] for c in self.concretized_order]
+        for spec in ordered_specs:
             # Parse cli arguments and construct a dictionary
-            # that will be passed to Package.do_install API
+            # that will be passed to the package installer
             kwargs = dict()
+            if install_args:
+                kwargs.update(install_args)
             if args:
                 spack.cmd.install.update_kwargs_from_args(args, kwargs)
 
-            self._install(spec, **kwargs)
+            installs.append((spec.package, kwargs))
+
+        try:
+            builder = PackageInstaller(installs)
+            builder.install()
+        finally:
+            # Ensure links are set appropriately
+            for spec in ordered_specs:
+                if spec.package.installed:
+                    self._install_log_links(spec)
 
     def all_specs(self):
         """Return all specs, even those a user spec would shadow."""
