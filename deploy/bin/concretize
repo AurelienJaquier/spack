@@ -69,7 +69,7 @@ def run():
     env = ev.get_env(args, 'deploy', required=True)
     with env.write_transaction():
         concretized_specs = env.concretize(force=True)
-        ev.display_specs(concretized_specs)
+        ev.display_specs(s for s in concretized_specs if not s[1].package.installed)
         env.write(regenerate_views=False)
 
     dag_hashes = [env.specs_by_hash[h].dag_hash() for h in env.concretized_order]
