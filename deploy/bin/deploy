@@ -46,7 +46,7 @@ class Builder:
             while not self.done:
                 for name in self.process_queue():
                     dag_hash = name.split("/")[-1]
-                    with open(installfile, "w+") as fd:
+                    with open(installfile, "a") as fd:
                         fd.write("/{}\n".format(dag_hash))
                 self.submit_unprocessed(piscine, env, logdir)
                 time.sleep(self._sleeptime)
