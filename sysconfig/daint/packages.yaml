@@ -1,8 +1,8 @@
 packages:
     mpich:
         modules:
-            mpich@7.7.10 arch=cray-cnl6-haswell: cray-mpich/7.7.10
-        version: [7.7.10]
+            mpich@7.7.15 arch=cray-cnl6-haswell: cray-mpich/7.7.15
+        version: [7.7.15]
         buildable: False
     autoconf:
         paths:
@@ -34,11 +34,6 @@ packages:
             libtool@2.4.6: /usr
         buildable: False
         version: [2.4.6]
-    openssl:
-        paths:
-            openssl@system: /usr
-        buildable: False
-        version: [system]
     cmake:
         paths:
             cmake@3.14.5: /apps/dom/UES/jenkins/7.0.UP01/mc/easybuild/software/CMake/3.14.5
@@ -54,10 +49,10 @@ packages:
         version: [6.1]
     hdf5:
         paths:
-            hdf5@1.10.5.1~mpi+hl arch=cray-cnl6-haswell: /opt/cray/pe/hdf5/1.10.5.1/gnu/7.1
-            hdf5@1.10.5.1+mpi+hl arch=cray-cnl6-haswell: /opt/cray/pe/hdf5-parallel/1.10.5.1/gnu/7.1
+            hdf5@1.12.0.0~mpi+hl arch=cray-cnl6-haswell: /opt/cray/pe/hdf5/1.12.0.0/gnu/8.2
+            hdf5@1.12.0.0+mpi+hl arch=cray-cnl6-haswell: /opt/cray/pe/hdf5-parallel/1.12.0.0/gnu/8.2
         buildable: False
-        version: [1.10.5.1]
+        version: [1.12.0.0]
     zeromq:
         variants: ~libsodium
     zlib:
@@ -67,7 +62,7 @@ packages:
         version: [1.2.11]
     python:
         paths:
-            python@8.2.1: /opt/python/3.8.2.1
+            python@3.8.2.1: /opt/python/3.8.2.1
         version: [3.8.2.1]
     py-h5py:
         paths:

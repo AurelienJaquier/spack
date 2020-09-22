@@ -12,6 +12,7 @@ class PyIpyparallel(PythonPackage):
     homepage = "http://ipython.org"
     url = "https://pypi.io/packages/source/i/ipyparallel/ipyparallel-6.2.2.tar.gz"
 
+    version('6.2.5', sha256='33416179665f9c2f567011ab1a618232bc32c0845c0a3a5c388f6c71048bc053')
     version('6.2.2', sha256='02b225966d5c20f12b1fba0b6b10aa5d352a6b492e075f137ff0ff6e95b9358e')
 
     depends_on('py-setuptools', type='build')
