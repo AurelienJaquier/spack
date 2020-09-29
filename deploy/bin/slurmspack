@@ -15,7 +15,6 @@ fi
 
 exec spack \
     -e ${1} \
-    --timestamp \
     install \
     -j ${CPUS} \
     --log-format junit --log-file stack-${TASK}.xml \
