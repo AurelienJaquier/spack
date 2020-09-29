@@ -720,7 +720,7 @@ EOF
     spack -e "${HOME}/build_environment" concretize -f
 
     export PATH="${SPACK_ROOT}/deploy/bin:${PATH}"
-    srun -n12 -c12 -Aproj16 -pprod slurmspack "${HOME}/build_environment"
+    srun -n1 -c12 -Aproj16 -pprod slurmspack "${HOME}/build_environment"
 
     cat > "${HOME}/stack.xml" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
