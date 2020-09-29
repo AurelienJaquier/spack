@@ -306,7 +306,7 @@ configure_compilers() {
             makelocalrc ${PGI_DIR} -gcc ${GCC_DIR}/bin/gcc -gpp ${GCC_DIR}/bin/g++ -g77 ${GCC_DIR}/bin/gfortran -x -net
             #configure pgi network license
             template=$(find $PGI_DIR -name localrc* ! -iname "*.bak" | tail -n 1)
-            for node in bbpv1 bbpv2 bbptadm tds03 tds04 r2i3n0 r2i3n1 r2i3n2 r2i3n3 r2i3n4 r2i3n5 r2i3n6; do
+            for node in bbpv1 bbpv2 bbptadm tds03 tds04 $(squeue -h -o %N\ %j -u bbprelman|awk '/ BB5-[0-9]+$/ {print $1}'); do
                 cp $template $PGI_DIR/localrc.$node || true
             done
         fi
@@ -714,8 +714,14 @@ EOF
     install_start=$(date "+%Y-%m-%d %H:%M:%S")
     rm -f "${HOME}/"stack*.xml
     rm -f "${HOME}/specs.txt"
+
+    mkdir -p "${HOME}/build_environment"
+    cp "${SPACK_ROOT}/deploy/environments/${what}.yaml" "${HOME}/build_environment/spack.yaml"
+    spack -e "${HOME}/build_environment" concretize -f
+
     export PATH="${SPACK_ROOT}/deploy/bin:${PATH}"
-    deploy -e "${HOME}/build_environment" -j 12 "${SPACK_ROOT}/deploy/environments/${what}.yaml" "${HOME}"
+    srun -n10 -c10 -Aproj16 -ppre_prod slurmspack "${HOME}/build_environment"
+
     cat > "${HOME}/stack.xml" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
@@ -729,7 +735,10 @@ EOF
     cp "${HOME}"/stack*.xml "${WORKSPACE:-.}/stacks/${what}"
 
     log "refreshing modules"
-    spack module tcl refresh -y --delete-tree --latest --upstream-modules $(<${HOME}/installed.txt)
+    # Filter out all output between "concretized" and the next empty line,
+    # replace hash in every line with a prefixed slash
+    specs=$(spack -e "${HOME}/build_environment" find -lc --no-groups|sed -n -e '/^==> Concretized/,/^$/ { s/^\([a-z0-9]\{7,7\}\) .*/\/\1/ p }')
+    spack module tcl refresh -y --delete-tree --latest --upstream-modules ${specs}
 
     . ${DEPLOYMENT_ROOT}/spack/share/spack/setup-env.sh
 
@@ -739,7 +748,7 @@ EOF
 
     if [[ "${export_packages[${what}]}" = "yes" ]]; then
         log "augmenting packages.yaml"
-        spack export --scope=user --module tcl --explicit --exclude 'allinea|py-.*|neuron|hdf5|intel-parallel-studio|pgi' $(<${HOME}/specs.txt) > "${HOME}/packages.yaml"
+        spack export --scope=user --module tcl --explicit --exclude 'allinea|py-.*|neuron|hdf5|intel-parallel-studio|pgi' ${specs} > "${HOME}/packages.yaml"
     else
         log "copying packages.yaml"
         cp "${HOME}/.spack/packages.yaml" "${HOME}"
