@@ -1754,6 +1754,10 @@ class BuildTask(object):
         # order in which it was added.
         self.sequence = next(_counter)
 
+        tty.debug('MINE --- {0} ---'.format(self.pkg_id))
+        for dep_id in self.dependents:
+            tty.debug('MINE >>> {0}'.format(dep_id))
+
     def __repr__(self):
         """Returns a formal representation of the build task."""
         rep = '{0}('.format(self.__class__.__name__)
@@ -1779,6 +1783,9 @@ class BuildTask(object):
             tty.debug('{0} is not in the dependents of {1} so adding'
                       .format(pkg_id, self.pkg_id))
             self.dependents.add(pkg_id)
+        tty.debug('MINE --- {0} ---'.format(self.pkg_id))
+        for dep_id in self.dependents:
+            tty.debug('MINE >>> {0}'.format(dep_id))
 
     def flag_installed(self, installed):
         """
