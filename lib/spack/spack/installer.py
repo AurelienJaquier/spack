@@ -995,8 +995,8 @@ class PackageInstaller(object):
                     # dependency's dependents to ensure it gets updated when
                     # this dependency is installed.
                     task = self.build_tasks[dep_id]
-                    for spec in dep.dependents():
-                        task.add_dependent(package_id(spec.package))
+                    for subdep_id in get_dependent_ids(dep):
+                        task.add_dependent(subdep_id)
                     # task.add_dependent(request.pkg_id)
 
                 # Clear any persistent failure markings _unless_ they are
