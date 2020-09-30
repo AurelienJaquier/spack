@@ -14,6 +14,7 @@ elif [[ -z "${1}" ]]; then
 fi
 
 exec spack \
+    -d \
     -e ${1} \
     install \
     -j ${CPUS} \
