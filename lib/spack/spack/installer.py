@@ -1412,7 +1412,7 @@ class PackageInstaller(object):
         self.installed.add(pkg_id)
 
         for dep_id in dependent_ids:
-            tty.debug('Dependent of {0}: {1}'.format(pkg_id, dep_id))
+            tty.debug('MINE Dependent of {0}: {1}'.format(pkg_id, dep_id))
 
         # Update affected dependents
         for dep_id in set(dependent_ids):
@@ -1487,7 +1487,7 @@ class PackageInstaller(object):
             # some package likely depends on it.
             if not task.explicit:
                 if _handle_external_and_upstream(pkg, False):
-                    self._flag_installed(pkg, get_dependent_ids(spec))
+                    self._flag_installed(pkg, task.dependents)
                     continue
 
             # Flag a failed spec.  Do not need an (install) prefix lock since
