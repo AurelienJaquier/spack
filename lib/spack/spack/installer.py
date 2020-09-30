@@ -967,6 +967,7 @@ class PackageInstaller(object):
         # ensure proper status tracking for environment build.
         not_local = _handle_external_and_upstream(request.pkg, True)
         if not_local:
+            tty.debug('MINE Not local {0}'.format(package_id(request.pkg)))
             self._flag_installed(request.pkg,
                                  get_dependent_ids(request.pkg.spec))
             return
@@ -1391,6 +1392,7 @@ class PackageInstaller(object):
             task (BuildTask): the build task for the installed package
         """
         task.status = STATUS_INSTALLED
+        tty.debug('MINE Mark installed')
         self._flag_installed(task.pkg, task.dependents)
 
     def _flag_installed(self, pkg, dependent_ids):
