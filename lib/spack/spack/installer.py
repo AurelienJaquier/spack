@@ -717,6 +717,7 @@ class PackageInstaller(object):
 
             # Flag external and upstream packages as being installed
             if dep_pkg.spec.external or dep_pkg.installed_upstream:
+                tty.debug('MINE Upstream {0}'.format(deb_pkg))
                 self._flag_installed(dep_pkg,
                                      get_dependent_ids(dep_pkg.spec))
                 continue
@@ -725,6 +726,7 @@ class PackageInstaller(object):
             # and flag as such if appropriate
             rec, installed_in_db = self._check_db(dep)
             if installed_in_db:
+                tty.debug('MINE Already installed {0}'.format(deb_pkg))
                 self._flag_installed(dep_pkg,
                                      get_dependent_ids(dep_pkg.spec))
 
