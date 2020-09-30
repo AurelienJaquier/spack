@@ -1491,6 +1491,7 @@ class PackageInstaller(object):
             # some package likely depends on it.
             if not task.explicit:
                 if _handle_external_and_upstream(pkg, False):
+                    tty.debug('MINE Not explicit {0}'.format(pkg_id))
                     self._flag_installed(pkg, task.dependents)
                     continue
 
