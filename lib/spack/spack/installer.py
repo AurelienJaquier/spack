@@ -995,7 +995,9 @@ class PackageInstaller(object):
                     # dependency's dependents to ensure it gets updated when
                     # this dependency is installed.
                     task = self.build_tasks[dep_id]
-                    task.add_dependent(request.pkg_id)
+                    for spec in dep.dependents():
+                        task.add_dependent(package_id(spec))
+                    # task.add_dependent(request.pkg_id)
 
                 # Clear any persistent failure markings _unless_ they are
                 # associated with another process in this parallel build
@@ -1488,7 +1490,7 @@ class PackageInstaller(object):
 
             # Skip the installation if the spec is not being installed locally
             # (i.e., if external or upstream) BUT flag it as installed since
-            # some package likely depends on it.
+            # some package likely depends on itk
             if not task.explicit:
                 if _handle_external_and_upstream(pkg, False):
                     tty.debug('MINE Not explicit {0}'.format(pkg_id))
