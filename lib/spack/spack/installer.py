@@ -1411,6 +1411,9 @@ class PackageInstaller(object):
 
         self.installed.add(pkg_id)
 
+        for dep_id in dependent_ids:
+            tty.debug('Dependent of {0}: {1}'.format(pkg_id, dep_id))
+
         # Update affected dependents
         for dep_id in set(dependent_ids):
             tty.debug('Removing {0} from {1}\'s uninstalled dependencies.'
