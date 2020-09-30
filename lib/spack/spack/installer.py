@@ -985,6 +985,7 @@ class PackageInstaller(object):
                     self._add_bootstrap_compilers(dep_pkg, request)
 
                 dep_id = package_id(dep_pkg)
+                tty.debug('MINE >>>>>> {0}'.format(self.dep_id))
                 if dep_id not in self.build_tasks:
                     self._push_task(dep_pkg, request, False, 0, 0,
                                     STATUS_ADDED)
@@ -1003,6 +1004,7 @@ class PackageInstaller(object):
                 # associated with another process in this parallel build
                 # of the spec.
                 spack.store.db.clear_failure(dep, force=False)
+                tty.debug('MINE <<<<<< {0}'.format(self.dep_id))
 
             # Push any missing compilers (if requested) as part of the
             # package dependencies.
@@ -1754,7 +1756,7 @@ class BuildTask(object):
         # order in which it was added.
         self.sequence = next(_counter)
 
-        tty.debug('MINE --- {0} ---'.format(self.pkg_id))
+        tty.debug('MINE +++ {0} +++'.format(self.pkg_id))
         for dep_id in self.dependents:
             tty.debug('MINE >>> {0}'.format(dep_id))
 
