@@ -997,6 +997,7 @@ class PackageInstaller(object):
                     # this dependency is installed.
                     task = self.build_tasks[dep_id]
                     for subdep_id in get_dependent_ids(dep):
+                        tty.debug('MINE ------ adding {0}'.format(subdep_id))
                         task.add_dependent(subdep_id)
                     # task.add_dependent(request.pkg_id)
 
