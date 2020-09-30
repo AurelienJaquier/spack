@@ -996,7 +996,7 @@ class PackageInstaller(object):
                     # this dependency is installed.
                     task = self.build_tasks[dep_id]
                     for spec in dep.dependents():
-                        task.add_dependent(package_id(spec))
+                        task.add_dependent(package_id(spec.package))
                     # task.add_dependent(request.pkg_id)
 
                 # Clear any persistent failure markings _unless_ they are
